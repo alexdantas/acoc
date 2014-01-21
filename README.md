@@ -8,9 +8,7 @@ and capturing the stdout stream. Optionally, stderr can
 be redirected to stdout, so that it, too, can be manipulated.
 
 `acoc` then applies matching rules to patterns in the output
-and applies colour sets to those matches. If the `$ACOC`
-environment variable is set to `none`, no colouring will be
-performed.
+and applies colour sets to those matches.
 
 ## Usage
 
@@ -33,6 +31,8 @@ Arguments are passed normally:
 
 ## Configuration
 
+### Files
+
 By reading the regular expressions on the configuration file,
 `acoc` decides how to color the output. Here's the order of
 reading:
@@ -44,8 +44,18 @@ reading:
 When you run `acoc` for the first time, an example file will
 be placed on your home directory.
 
-If the `$ACOCRC` environment variable is set, specifies the
-location of an additional configuration file.
+### Environment Variables
+
+`acoc` also responds to environment variables. You'd normally
+use them like this:
+
+    $ export VAR="value"
+    $ acoc
+
+If `ACOC` is set to `none`, no colouring will be performed.
+
+If `ACOCRC` is set, specifies the location of an additional
+configuration file.
 
 ## Contributing
 
