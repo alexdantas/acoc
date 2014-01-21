@@ -32,7 +32,7 @@ Installing as a RubyGem should solve all dependencies:
     $ gem install acoc
 
 `acoc` can also make use of
-[Masahiro Tomita's Ruby/TPty]((http://www.tmtm.org/ruby/tpty/))
+[Masahiro Tomita's Ruby/TPty](http://www.tmtm.org/ruby/tpty/)
 library to allocate pseudo-terminals in order to fool those
 programs that behave differently if their *stdout* stream is not
 connected to a tty.
@@ -70,6 +70,17 @@ If `ACOC` is set to `none`, no colouring will be performed.
 
 If `ACOCRC` is set, specifies the location of an additional
 configuration file.
+
+## Screenshots
+
+**traceroute (green = fast, red = slow)**
+![traceroute](http://caliban.org/images/traceroute.png)
+
+**w (neat colors)**
+![w](http://caliban.org/images/w.png)
+
+**top (with root's processes shown in red)**
+![top](http://caliban.org/images/top.png)
 
 ## Contributing
 
