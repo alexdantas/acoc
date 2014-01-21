@@ -1,0 +1,648 @@
+
+RCS file: /var/cvs/acoc/acoc,v
+Working file: acoc
+head: 1.67
+branch:
+locks: strict
+access list:
+symbolic names:
+	v0-7-1: 1.67
+	v0-7-0: 1.65
+	v0-6-0: 1.62
+	v0-5-2: 1.58
+	v0-5-1: 1.57
+	v0-5-0: 1.56
+	v0-4-7: 1.53
+	v0-4-6: 1.52
+	v0-4-5: 1.51
+	v0-4-4: 1.47
+	v0-4-3: 1.46
+	v0-4-2: 1.44
+	v0-4-1: 1.38
+	v0-4-0: 1.37
+	v0-3-0: 1.33
+	v0-2-6: 1.25
+	v0-2-5: 1.22
+	v0-2-1: 1.20
+	v0-2-0: 1.19
+	default: 1.1.1.1
+	rc: 1.1.1
+keyword substitution: kv
+total revisions: 68;	selected revisions: 68
+description:
+----------------------------
+revision 1.67
+date: 2005/02/27 01:02:24;  author: ianmacd;  state: Exp;  lines: +5 -5
+
+Bump version to 0.7.1 and copyright message to include 2005.
+----------------------------
+revision 1.66
+date: 2005/02/27 01:01:17;  author: ianmacd;  state: Exp;  lines: +5 -2
+
+Catch SIGPIPE during exit.
+----------------------------
+revision 1.65
+date: 2004/10/31 23:57:33;  author: ianmacd;  state: Exp;  lines: +3 -3
+
+- bump version to 0.7.0
+----------------------------
+revision 1.64
+date: 2004/10/28 09:19:08;  author: ianmacd;  state: Exp;  lines: +3 -3
+
+- Make it possible to use regular expressions in program specs,
+  e.g. [ps -.*(e.*f|f.*e)]. Additionally, @spec@ can be used to delimit specs,
+  instead of [spec].
+----------------------------
+revision 1.63
+date: 2004/10/28 06:34:48;  author: ianmacd;  state: Exp;  lines: +4 -3
+
+- When removing acoc's path from PATH, remove it multiple times if necessary,
+  to avoid reinvoking acoc.
+----------------------------
+revision 1.62
+date: 2004/10/23 08:49:08;  author: ianmacd;  state: Exp;  lines: +3 -3
+
+- update to 0.6.0
+----------------------------
+revision 1.61
+date: 2004/10/21 09:17:46;  author: ianmacd;  state: Exp;  lines: +7 -3
+
+- rework assembly of config file list array
+----------------------------
+revision 1.60
+date: 2004/10/20 08:59:39;  author: ianmacd;  state: Exp;  lines: +4 -1
+
+- document $ACOCRC
+----------------------------
+revision 1.59
+date: 2004/10/20 08:47:49;  author: ianmacd;  state: Exp;  lines: +3 -3
+
+- allow a user-definable config file to be given in $ACOCRC
+----------------------------
+revision 1.58
+date: 2004/04/05 07:37:51;  author: ianmacd;  state: Exp;  lines: +8 -8
+
+- bump version to 0.5.2
+- command line args expanded by globbing presented problems if the expansion
+  then contained single quotes (ls on mp3 files would often show this)
+- expand ARGV array when passing it to colour method
+- remove a superfluous debugging statement
+----------------------------
+revision 1.57
+date: 2004/02/05 03:36:20;  author: ianmacd;  state: Exp;  lines: +6 -4
+
+- properly catch Errno::ECHILD
+- update to version 0.5.1
+----------------------------
+revision 1.56
+date: 2004/01/12 11:02:32;  author: ianmacd;  state: Exp;  lines: +8 -5
+
+- sometimes need to catch Errno::ECHILD in waitpid2
+----------------------------
+revision 1.55
+date: 2004/01/12 10:57:38;  author: ianmacd;  state: Exp;  lines: +2 -3
+
+- move a line of comment
+----------------------------
+revision 1.54
+date: 2004/01/12 10:31:04;  author: ianmacd;  state: Exp;  lines: +19 -9
+
+- trap SIGCHLD and make sure non-zero exit status of child process is
+  passed back to parent, so that we don't accidentally mask failures
+- update version to 0.5.0
+----------------------------
+revision 1.53
+date: 2003/12/10 10:53:39;  author: ianmacd;  state: Exp;  lines: +5 -5
+
+- fix bug that caused /r to work only for the first spec that included it
+----------------------------
+revision 1.52
+date: 2003/09/12 16:16:15;  author: ianmacd;  state: Exp;  lines: +10 -12
+
+- programs run in pseudo-tty should not run in their own session
+----------------------------
+revision 1.51
+date: 2003/07/31 04:41:35;  author: ianmacd;  state: Exp;  lines: +2 -2
+
+- update version in documentation
+----------------------------
+revision 1.50
+date: 2003/07/31 04:39:56;  author: ianmacd;  state: Exp;  lines: +2 -2
+
+- update version to 0.4.5
+----------------------------
+revision 1.49
+date: 2003/07/31 04:38:40;  author: ianmacd;  state: Exp;  lines: +2 -2
+
+- handle signals properly
+----------------------------
+revision 1.48
+date: 2003/07/24 21:15:03;  author: ianmacd;  state: Exp;  lines: +2 -2
+
+- why am I trying to trap SIGSTOP?
+----------------------------
+revision 1.47
+date: 2003/07/18 09:55:12;  author: ianmacd;  state: Exp;  lines: +10 -5
+
+- Ruby 1.6.x can't take rescue as a statement modifier
+----------------------------
+revision 1.46
+date: 2003/07/18 08:44:09;  author: ianmacd;  state: Exp;  lines: +3 -3
+
+- increase version to 0.4.3
+----------------------------
+revision 1.45
+date: 2003/07/18 08:35:16;  author: ianmacd;  state: Exp;  lines: +23 -9
+
+- go back to using Masahiro Tomita's Ruby/TPty library, after problems
+  with standard PTY library
+----------------------------
+revision 1.44
+date: 2003/07/17 05:47:28;  author: ianmacd;  state: Exp;  lines: +4 -4
+
+- update to version 0.4.2
+----------------------------
+revision 1.43
+date: 2003/07/15 09:44:53;  author: ianmacd;  state: Exp;  lines: +51 -41
+
+- modularise the colouring code by putting it into its own method, colour_line
+----------------------------
+revision 1.42
+date: 2003/07/15 09:29:49;  author: ianmacd;  state: Exp;  lines: +7 -21
+
+- use standard PTY module, rather than Ruby/TPty
+----------------------------
+revision 1.41
+date: 2003/07/15 08:58:09;  author: ianmacd;  state: Exp;  lines: +4 -3
+
+- add RD paragraph on use of $ACOC
+----------------------------
+revision 1.40
+date: 2003/07/15 08:44:59;  author: ianmacd;  state: Exp;  lines: +3 -3
+
+- no colouring if $ACOC == 'none'
+----------------------------
+revision 1.39
+date: 2003/07/14 03:27:42;  author: ianmacd;  state: Exp;  lines: +3 -6
+
+- minor simplification
+----------------------------
+revision 1.38
+date: 2003/07/08 06:57:48;  author: ianmacd;  state: Exp;  lines: +7 -7
+
+- fix bug whereby arguments containing white space were expanded to
+  multiple arguments
+----------------------------
+revision 1.37
+date: 2003/07/06 22:42:23;  author: ianmacd;  state: Exp;  lines: +5 -5
+
+- update to 0.4.0
+----------------------------
+revision 1.36
+date: 2003/07/03 06:41:08;  author: ianmacd;  state: Exp;  lines: +12 -3
+
+- when trying to match the program specs against the command line, try to
+  match the longest (i.e. most specific) spec first, so that if there's a
+  config for, for example, 'ps ax', it will match before the one for 'ps a'
+----------------------------
+revision 1.35
+date: 2003/07/01 08:20:32;  author: ianmacd;  state: Exp;  lines: +16 -12
+
+- move more stuff into 'colour' method
+----------------------------
+revision 1.34
+date: 2003/07/01 07:48:57;  author: ianmacd;  state: Exp;  lines: +19 -15
+
+- implement argument-specific colouring, so that colouring depends on how
+  the command was invoked
+----------------------------
+revision 1.33
+date: 2003/06/30 02:17:37;  author: ianmacd;  state: Exp;  lines: +3 -3
+
+- update version to 0.3.0
+----------------------------
+revision 1.32
+date: 2003/06/30 01:53:27;  author: ianmacd;  state: Exp;  lines: +6 -6
+
+- avoid unnecessary use of * operator with ARGV
+----------------------------
+revision 1.31
+date: 2003/06/29 00:49:08;  author: ianmacd;  state: Exp;  lines: +2 -2
+
+- call our own run method, not exec when running target program in fork
+  for pty
+----------------------------
+revision 1.30
+date: 2003/06/29 00:29:51;  author: ianmacd;  state: Exp;  lines: +96 -64
+
+- 'require' optional Ruby/TPty for pseudo-terminal usage
+- move colouring code into its own method, colour
+- new program flag /p allocates a pseudo-terminal through which to run the
+  target program
+----------------------------
+revision 1.29
+date: 2003/06/27 16:11:21;  author: ianmacd;  state: Exp;  lines: +10 -7
+
+- subsequent program specs for a given program were replacing all previous
+  ones
+----------------------------
+revision 1.28
+date: 2003/06/27 07:50:18;  author: ianmacd;  state: Exp;  lines: +6 -8
+
+- a method contains an implicit begin/end block
+----------------------------
+revision 1.27
+date: 2003/06/27 07:19:27;  author: ianmacd;  state: Exp;  lines: +70 -55
+
+- program specs are now Program objects, rather than arrays of hashes.
+  The colour specs that used to form the values of the hash and were,
+  themselves, a hash of arrays, are now Rule objects.
+
+  This allows us to eliminate the @flags hash completely and simplify
+  other parts of the code.
+----------------------------
+revision 1.26
+date: 2003/06/26 07:46:25;  author: ianmacd;  state: Exp;  lines: +6 -4
+
+- merely exec() the program if there *is* a configuration stanza, but it
+  contains *no* rules
+----------------------------
+revision 1.25
+date: 2003/06/26 04:19:46;  author: ianmacd;  state: Exp;  lines: +10 -3
+
+- bump version to 0.2.6
+- space out some of the code blocks a little
+----------------------------
+revision 1.24
+date: 2003/06/26 04:17:34;  author: ianmacd;  state: Exp;  lines: +2 -2
+
+- parse /usr/local/etc/acoc.conf after /etc/acoc.conf
+----------------------------
+revision 1.23
+date: 2003/06/26 04:16:56;  author: ianmacd;  state: Exp;  lines: +7 -1
+
+- add new operational flag, /r, which removes all previous matching rules
+  for the given program
+----------------------------
+revision 1.22
+date: 2003/06/21 10:27:01;  author: ianmacd;  state: Exp;  lines: +22 -14
+
+- by default, output is not coloured if stdout is not a tty
+- add new program flag /t for allowing output to be coloured even when stdout
+  is not a tty
+----------------------------
+revision 1.21
+date: 2003/06/20 23:22:28;  author: ianmacd;  state: Exp;  lines: +3 -3
+
+- exec command without colouring if STDOUT is not a tty. There's no point
+  having colour output that you'll never see and scripts that capture
+  command output don't like it either.
+----------------------------
+revision 1.20
+date: 2003/06/20 08:53:55;  author: ianmacd;  state: Exp;  lines: +3 -3
+
+- update version to 0.2.1
+----------------------------
+revision 1.19
+date: 2003/06/11 07:31:42;  author: ianmacd;  state: Exp;  lines: +3 -3
+
+- change version to 0.2.0
+----------------------------
+revision 1.18
+date: 2003/06/10 01:38:35;  author: ianmacd;  state: Exp;  lines: +10 -3
+
+- catch a SIGPIPE while printing
+- error message if we're called on a non-existent program should go to
+  stderr, not stdout
+----------------------------
+revision 1.17
+date: 2003/06/09 10:22:03;  author: ianmacd;  state: Exp;  lines: +1 -2
+
+- remove bug about program flags needing to appear on final stanza
+----------------------------
+revision 1.16
+date: 2003/06/09 10:07:10;  author: ianmacd;  state: Exp;  lines: +3 -2
+
+- make program flags cumulative with each stanza
+----------------------------
+revision 1.15
+date: 2003/06/08 06:39:16;  author: ianmacd;  state: Exp;  lines: +3 -2
+
+- check for a config file at /usr/local/etc/acoc.conf, too
+----------------------------
+revision 1.14
+date: 2003/06/08 06:23:47;  author: ianmacd;  state: Exp;  lines: +14 -6
+
+- update RD documentation
+----------------------------
+revision 1.13
+date: 2003/06/08 02:03:33;  author: ianmacd;  state: Exp;  lines: +3 -2
+
+- minor documentation fix
+----------------------------
+revision 1.12
+date: 2003/06/08 01:52:52;  author: ianmacd;  state: Exp;  lines: +12 -6
+
+- improve documentation
+----------------------------
+revision 1.11
+date: 2003/06/08 00:49:10;  author: ianmacd;  state: Exp;  lines: +2 -2
+
+- RD documentation didn't parse
+----------------------------
+revision 1.10
+date: 2003/06/08 00:32:19;  author: ianmacd;  state: Exp;  lines: +72 -6
+
+- include version and usage methods
+- catch ENOENT when trying to call a non-existant command
+- add some RD documentation
+- rename to acoc
+----------------------------
+revision 1.9
+date: 2003/06/06 06:45:16;  author: ianmacd;  state: Exp;  lines: +2 -2
+
+- fix bug whereby data in config stanzas for a command would be overwritten
+  as soon as a later stanza was parsed
+----------------------------
+revision 1.8
+date: 2003/06/06 06:29:11;  author: ianmacd;  state: Exp;  lines: +3 -3
+
+- state config file name when parsing fails
+----------------------------
+revision 1.7
+date: 2003/06/06 03:56:01;  author: ianmacd;  state: Exp;  lines: +3 -3
+
+- change all references to rc into references to rcf. rc conflicts with
+  Red Hat's Red Carpet service.
+- .spec file now Obsoletes rc
+----------------------------
+revision 1.6
+date: 2003/06/05 16:58:51;  author: ianmacd;  state: Exp;  lines: +4 -4
+
+- fix some white space
+----------------------------
+revision 1.5
+date: 2003/06/05 06:03:13;  author: ianmacd;  state: Exp;  lines: +18 -7
+
+- allow for multiple colour attributes, such as 'bold + red', etc.
+----------------------------
+revision 1.4
+date: 2003/06/04 05:21:52;  author: ianmacd;  state: Exp;  lines: +3 -3
+
+- Ruby 1.6 doesn't have String#to_sym or the Signal class, so work around
+  this
+----------------------------
+revision 1.3
+date: 2003/06/03 23:29:55;  author: ianmacd;  state: Exp;  lines: +9 -4
+
+- add symlink handling code
+----------------------------
+revision 1.2
+date: 2003/06/03 05:42:14;  author: ianmacd;  state: Exp;  lines: +5 -1
+
+- check if the command used to invoke the program is a symlink. If it is,
+  remove its directory from the $PATH and then add the program's name to
+  the start of ARGV.
+
+  This allows us to use both:
+
+  $ rc command arg1 arg2 ...
+
+  and
+
+  $ command arg1 arg2 ...
+
+  to invoke the program either directly or indirectly
+----------------------------
+revision 1.1
+date: 2003/06/02 10:04:14;  author: ianmacd;  state: Exp;
+branches:  1.1.1;
+Initial revision
+----------------------------
+revision 1.1.1.1
+date: 2003/06/02 10:04:14;  author: ianmacd;  state: Exp;  lines: +0 -0
+
+- initial check-in
+=============================================================================
+
+RCS file: /var/cvs/acoc/acoc.conf,v
+Working file: acoc.conf
+head: 1.34
+branch:
+locks: strict
+access list:
+symbolic names:
+	v0-7-1: 1.34
+	v0-7-0: 1.34
+	v0-6-0: 1.31
+	v0-5-2: 1.29
+	v0-5-1: 1.29
+	v0-5-0: 1.29
+	v0-4-7: 1.29
+	v0-4-6: 1.28
+	v0-4-5: 1.26
+	v0-4-4: 1.26
+	v0-4-3: 1.26
+	v0-4-2: 1.26
+	v0-4-1: 1.24
+	v0-4-0: 1.24
+	v0-3-0: 1.20
+	v0-2-6: 1.19
+	v0-2-5: 1.18
+	v0-2-1: 1.17
+	v0-2-0: 1.16
+	default: 1.1.1.1
+	rc: 1.1.1
+keyword substitution: kv
+total revisions: 35;	selected revisions: 35
+description:
+----------------------------
+revision 1.34
+date: 2004/10/29 07:41:32;  author: ianmacd;  state: Exp;  lines: +6 -6
+
+- fix colouring for top(1), so that it works with the versions from procps
+  2.x and 3.x
+----------------------------
+revision 1.33
+date: 2004/10/29 06:56:21;  author: ianmacd;  state: Exp;  lines: +4 -5
+
+- convert to using regexes in program specs, for better matching
+----------------------------
+revision 1.32
+date: 2004/10/23 19:00:38;  author: ianmacd;  state: Exp;  lines: +3 -2
+
+- allow ls to colour when -h is given
+----------------------------
+revision 1.31
+date: 2004/10/21 07:46:53;  author: ianmacd;  state: Exp;  lines: +49 -5
+
+- apt-cache, apt-get, nmap, netstat, lsmod and whereis colouring adapted
+  from patterns sent in by Kototama <kototama-code@altern.org>
+----------------------------
+revision 1.30
+date: 2004/10/20 09:10:06;  author: ianmacd;  state: Exp;  lines: +10 -1
+
+- add config for Ruby, supplied by Gavin Sinclair <gsinclair@soyabean.com.au>
+----------------------------
+revision 1.29
+date: 2003/10/08 03:50:15;  author: ianmacd;  state: Exp;  lines: +3 -3
+
+- ifconfig fixes
+----------------------------
+revision 1.28
+date: 2003/09/12 16:09:29;  author: ianmacd;  state: Exp;  lines: +2 -2
+
+- ping behaves differently because of isatty(3), so use a pseudo-TTY
+----------------------------
+revision 1.27
+date: 2003/08/14 18:10:47;  author: ianmacd;  state: Exp;  lines: +3 -3
+
+- minor ping and traceroute fix
+----------------------------
+revision 1.26
+date: 2003/07/17 05:42:14;  author: ianmacd;  state: Exp;  lines: +4 -4
+
+- fix traceroute colouring for TTLs under 10ms
+- colour traceroute errors
+----------------------------
+revision 1.25
+date: 2003/07/16 08:32:07;  author: ianmacd;  state: Exp;  lines: +2 -2
+
+- diff output should not be coloured when not going to stdout
+----------------------------
+revision 1.24
+date: 2003/07/06 23:00:39;  author: ianmacd;  state: Exp;  lines: +2 -2
+
+- 'ps a' will match more than 'ps ax'
+----------------------------
+revision 1.23
+date: 2003/07/03 06:43:24;  author: ianmacd;  state: Exp;  lines: +4 -4
+
+- don't show command lines in bold
+----------------------------
+revision 1.22
+date: 2003/07/01 08:54:00;  author: ianmacd;  state: Exp;  lines: +14 -6
+
+- make rpm rules specific to package building
+- add rpm rules for querying packages
+----------------------------
+revision 1.21
+date: 2003/07/01 07:54:42;  author: ianmacd;  state: Exp;  lines: +11 -3
+
+- apply diff rules to 'cvs diff' and 'p4 diff', too
+- add rules for 'ps ax' and 'ps -ef'
+----------------------------
+revision 1.20
+date: 2003/06/28 08:20:10;  author: ianmacd;  state: Exp;  lines: +5 -4
+
+- ls needs a pseudo-terminal
+- fix diff rule
+----------------------------
+revision 1.19
+date: 2003/06/26 05:02:46;  author: ianmacd;  state: Exp;  lines: +4 -4
+
+- correct and improve rules for ls
+----------------------------
+revision 1.18
+date: 2003/06/21 10:02:40;  author: ianmacd;  state: Exp;  lines: +7 -7
+
+- add /t flag for programs that are unlikely to be used in scripts
+----------------------------
+revision 1.17
+date: 2003/06/20 08:55:51;  author: ianmacd;  state: Exp;  lines: +41 -4
+
+- diff section now also applies to rcsdiff
+- make section now also applies to gmake
+- new config sections for tcpdump, ldd, nm, strace, ltrace, id and ls
+----------------------------
+revision 1.16
+date: 2003/06/11 01:16:37;  author: ianmacd;  state: Exp;  lines: +2 -2
+
+- minimal support for context diffs, too
+----------------------------
+revision 1.15
+date: 2003/06/11 01:10:49;  author: ianmacd;  state: Exp;  lines: +15 -9
+
+- diff rules now handle standard format as well as unified format
+- break out rpmbuild rules into gcc and make rules
+----------------------------
+revision 1.14
+date: 2003/06/08 02:16:07;  author: ianmacd;  state: Exp;  lines: +2 -2
+
+- top show's command lines of processes run by root in red, not the word
+  'root'
+----------------------------
+revision 1.13
+date: 2003/06/08 00:47:19;  author: ianmacd;  state: Exp;  lines: +3 -3
+
+- rename all references to rcf to acoc
+----------------------------
+revision 1.12
+date: 2003/06/06 07:13:57;  author: ianmacd;  state: Exp;  lines: +7 -7
+
+- fix ifconfig
+----------------------------
+revision 1.11
+date: 2003/06/06 07:04:56;  author: ianmacd;  state: Exp;  lines: +20 -5
+
+- add route and ifconfig rules
+- remove the vmstat header colouring - it didn't work
+- simplify the df stuff
+----------------------------
+revision 1.10
+date: 2003/06/06 06:20:52;  author: ianmacd;  state: Exp;  lines: +5 -1
+
+- rules for df
+----------------------------
+revision 1.9
+date: 2003/06/06 03:56:01;  author: ianmacd;  state: Exp;  lines: +2 -2
+
+- change all references to rc into references to rcf. rc conflicts with
+  Red Hat's Red Carpet service.
+- .spec file now Obsoletes rc
+----------------------------
+revision 1.8
+date: 2003/06/05 16:59:19;  author: ianmacd;  state: Exp;  lines: +36 -1
+
+- top and vmstat rules
+----------------------------
+revision 1.7
+date: 2003/06/05 06:00:02;  author: ianmacd;  state: Exp;  lines: +6 -1
+
+- extra config line for rpmbuild
+----------------------------
+revision 1.6
+date: 2003/06/04 03:35:53;  author: ianmacd;  state: Exp;  lines: +5 -3
+
+- ping fixes and improvements
+----------------------------
+revision 1.5
+date: 2003/06/04 00:37:58;  author: ianmacd;  state: Exp;  lines: +5 -1
+
+- add place-holder [default] section
+----------------------------
+revision 1.4
+date: 2003/06/03 23:06:40;  author: ianmacd;  state: Exp;  lines: +10 -2
+
+- numerous additions and fixes
+----------------------------
+revision 1.3
+date: 2003/06/03 05:47:58;  author: ianmacd;  state: Exp;  lines: +2 -2
+
+- add /a flag to traceroute to ensure all 3 packets per line are matched
+----------------------------
+revision 1.2
+date: 2003/06/02 10:22:43;  author: ianmacd;  state: Exp;  lines: +1 -0
+
+- added Id tag
+----------------------------
+revision 1.1
+date: 2003/06/02 09:47:32;  author: ianmacd;  state: Exp;
+branches:  1.1.1;
+Initial revision
+----------------------------
+revision 1.1.1.1
+date: 2003/06/02 09:47:32;  author: ianmacd;  state: Exp;  lines: +0 -0
+
+- initial check-in
+=============================================================================

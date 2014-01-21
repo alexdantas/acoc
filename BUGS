@@ -1,0 +1,62 @@
+# $Id: BUGS,v 1.6 2004/11/01 00:02:49 ianmacd Exp $
+
+Known issues with acoc
+----------------------
+
+- Interactive programs do not work well with acoc.
+
+  This includes things like 'make config' when building a kernel on Linux,
+  Ruby's interactive interpreter (irb) and others. This is due to the fact
+  that acoc's output is line-buffered.
+
+- TkDiff displays error messages when calling diff via acoc.
+
+- curses based programs don't always work correctly, such as mtr.
+
+- Programs that expect to output to a tty may act oddly when called by acoc in
+  its default mode, since their output is first passed through a pipe to acoc
+  and only then sent to stdout.
+
+  ls, for example, formats its basic output as a single column if it detects
+  that it is not outputting to a tty, so the output of 'ls' will be the same
+  as for 'ls -1' when called via acoc in its default mode.
+
+  The /p program flag was added to acoc 0.3.0 to circumvent this problem.
+
+- A similar problem used to occur when acoc was invoked via a symlink and
+  acoc's stdout was not a tty.
+
+  Consider the following line of code from /etc/bashrc on a Red Hat Linux
+  system:
+
+    if [ "`id -gn`" = "`id -un`" -a `id -u` -gt 99 ]; then
+
+  If id(1) is symlinked to acoc and acoc adds ANSI colour codes to id's
+  output, the backticks in the above three invocations of id will capture the
+  colour codes along with the normal output, causing the comparison to fail
+  with an error.
+
+  For this reason, the default behaviour of acoc as of version 0.2.5 is to
+  leave command output unaltered if stdout is not a tty. This can be
+  overridden by specifying the /t flag on a 'program_spec'.
+
+
+If you encounter one of the above problems while invoking a program via a
+symlink to acoc and need to avoid running the program through acoc on this
+particular occasion, call the program using its full path to ensure that acoc
+is bypassed, e.g.
+
+$ /usr/bin/make config
+
+instead of:
+
+$ make config
+
+If the program is called indirectly, such as diff being called by TkDiff,
+circumvent the calling of diff via acoc by passing your program an explicit
+path that omits /usr/acoc/bin, e.g.
+
+$ PATH=/usr/bin:/usr/local/bin:/usr/X11R6/bin tkdiff file1 file2
+
+Then, the /usr/acoc/bin/diff symlink will not be found when TkDiff invokes
+diff.
