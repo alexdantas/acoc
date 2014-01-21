@@ -1,3 +1,75 @@
 #!/usr/bin/env ruby
+#   __    __    ___   __
+#  / /\  / /`  / / \ / /`
+# /_/--\ \_\_, \_\_/ \_\_,
+#
+# acoc - Arbitrary Command Output Colorer
+# $Id: acoc,v 1.67 2005/02/27 01:02:24 ianmacd Exp $
+#
+# Version : 0.7.1
+# Author  : Ian Macdonald <ian@caliban.org>
+#
+# Copyright (C) 2003-2005 Ian Macdonald
+#
+#   This program is free software; you can redistribute it and/or modify
+#   it under the terms of the GNU General Public License as published by
+#   the Free Software Foundation; either version 2, or (at your option)
+#   any later version.
+#
+#   This program is distributed in the hope that it will be useful,
+#   but WITHOUT ANY WARRANTY; without even the implied warranty of
+#   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#   GNU General Public License for more details.
+#
+#   You should have received a copy of the GNU General Public License
+#   along with this program; if not, write to the Free Software Foundation,
+#   Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 
 require 'acoc'
+
+begin
+  ACOC.initialise
+
+  if File.lstat($0).symlink?  # we're being invoked via a symlink
+    # Remove symlink's directory from PATH,
+    # multiple times if necessary
+    # Otherwise, acoc will reinvoke itself.
+    ENV['PATH'] = ENV['PATH'].gsub(/#{File.dirname($0)}:?/, '')
+
+    # prefix command line with symlink's name
+    ARGV.unshift 'acoc' # ARGV can now be either exec'ed or popen'ed
+  end
+
+  ACOC.usage   if ARGV.empty? || %w[-h --help].include?(ARGV[0])
+  ACOC.version if %w[-v --version].include?(ARGV[0])
+
+  # sort the keys to ensure we find the longest (i.e. most specific)
+  # match for the command line, e.g. a config section for [ps ax]
+  # will match before one for [ps a]
+  prog = nil
+  ACOC::cmd.keys.sort { |a,b| b.length <=> a.length }.each do |key|
+    if ARGV.join(' ').match(/^#{key}/)
+      prog = key
+      break
+    end
+  end
+
+  # if there's no config section for this command and no 'default'
+  # section, simply execute it normally.
+  # Do same if $ACOC set to 'none'.
+  ACOC.run(ARGV) if ENV['ACOC'] == 'none' || ! (prog || ACOC::cmd.include?('default'))
+
+  # use default section if no program-specific section available
+  prog ||= 'default'
+
+  # if there's a config section for the command, but no rules to
+  # accompany it, simply execute it normally.
+  # Likewise if STDOUT is not a tty and the 't' flag is
+  # not specified.
+  ACOC.run(ARGV) if ACOC::cmd[prog].specs.empty? ||
+    ! ($stdout.tty? || ACOC::cmd[prog].flags.include?('t'))
+
+  # colour program output
+  ACOC.colour(prog, *ARGV)
+end
+

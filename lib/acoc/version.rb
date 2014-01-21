@@ -1,3 +1,3 @@
-module Acoc
-  VERSION = "0.0.1"
+module ACOC
+  VERSION = '0.7.1'
 end
