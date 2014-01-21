@@ -27,7 +27,20 @@ Arguments are passed normally:
 
 ## Installation
 
+Installing as a RubyGem should solve all dependencies:
+
     $ gem install acoc
+
+`acoc` can also make use of
+[Masahiro Tomita's Ruby/TPty]((http://www.tmtm.org/ruby/tpty/))
+library to allocate pseudo-terminals in order to fool those
+programs that behave differently if their *stdout* stream is not
+connected to a tty.
+`ls` is one such program.
+
+Whilst Ruby/TPty is not mandatory (`acoc` will ignore its absence),
+it's installation is recommended in order to improve the
+transparency of `acoc`'s operation.
 
 ## Configuration
 
@@ -42,7 +55,8 @@ reading:
 3. `~/.acoc.conf`
 
 **NOTE:** When you run `acoc` for the first time, it places an
-example file on your home directory.
+example file on your home directory. Instructions on how to
+customize and add your commands are included there.
 
 ### Environment Variables
 
