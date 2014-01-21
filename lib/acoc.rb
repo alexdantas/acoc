@@ -1,5 +1,6 @@
 
 require 'English'
+require 'fileutils'
 require 'acoc/version'
 require 'acoc/program'
 require 'acoc/config'
@@ -30,14 +31,28 @@ module ACOC
   def initialise
     # Queen's or Dubya's English?
     if ENV['LANG'] == "en_US" || ENV['LC_ALL'] == "en_US"
-      @colour = "color"
+      @@colour = "color"
     else
-      @colour = "colour"
+      @@colour = "colour"
     end
 
     config_files = %w(/etc/acoc.conf /usr/local/etc/acoc.conf)
     config_files << ENV['HOME'] + "/.acoc.conf"
     config_files << ENV['ACOCRC'] if ENV['ACOCRC']
+
+    # If there's no config file on user's home directory,
+    # we'll place our default one there.
+    #
+    # The default one lies on the same directory as the
+    # rest of the source code.
+    # Since __FILE__ is inside lib/, we'll need to jump
+    # above.
+    #
+    if not File.exists? File.expand_path '~/.acoc.conf'
+      fixed_config = File.expand_path(File.dirname(__FILE__) + '/../acoc.conf')
+
+      FileUtils.cp(fixed_config, File.expand_path('~/.acoc.conf'))
+    end
 
     if parse_config(*config_files) == 0
       $stderr.puts "No readable config files found."
@@ -121,7 +136,7 @@ EOF
 
             colours = colours.split(/\s*,\s*/)
             colours.join(' ').split(/[+\s]+/).each do |colour|
-              raise "#{colour} is not a supported #{@colour}" \
+              raise "#{@@colour} is not a supported #{@@colour}" \
               unless attributes.collect { |a| a.to_s }.include? colour
               end
 

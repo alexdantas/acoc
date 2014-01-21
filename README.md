@@ -41,8 +41,8 @@ reading:
 2. `/etc/acoc.conf`
 3. `~/.acoc.conf`
 
-When you run `acoc` for the first time, an example file will
-be placed on your home directory.
+**NOTE:** When you run `acoc` for the first time, it places an
+example file on your home directory.
 
 ### Environment Variables
 
