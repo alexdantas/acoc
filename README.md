@@ -74,12 +74,15 @@ configuration file.
 ## Screenshots
 
 **traceroute (green = fast, red = slow)**
+
 ![traceroute](http://caliban.org/images/traceroute.png)
 
 **w (neat colors)**
+
 ![w](http://caliban.org/images/w.png)
 
 **top (with root's processes shown in red)**
+
 ![top](http://caliban.org/images/top.png)
 
 ## Contributing
