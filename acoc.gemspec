@@ -6,8 +6,8 @@ require 'acoc/version'
 Gem::Specification.new do |spec|
   spec.name          = "acoc"
   spec.version       = ACOC::VERSION
-  spec.authors       = ["Ian Macdonald"]
-  spec.email         = ["ian@caliban.org"]
+  spec.authors       = ["Ian Macdonald", "Alexandre Dantas"]
+  spec.email         = ["eu@alexdantas.net"]
   spec.description   = <<END
 `acoc` is a regular expression based colour formatter for programs
 that display output on the command-line.
@@ -20,7 +20,7 @@ be redirected to stdout, so that it, too, can be manipulated.
 and applies colour sets to those matches.
 END
   spec.summary       = 'Arbitrary Command Output Colourer'
-  spec.homepage      = "http://caliban.org/ruby/acoc.shtml"
+  spec.homepage      = "http://github.com/alexdantas/acoc"
   spec.license       = "GPL-2.0"
 
   spec.files         = `git ls-files`.split($/)
