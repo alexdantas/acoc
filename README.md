@@ -17,6 +17,10 @@ Arguments are passed normally:
 
     acoc command [arg1 .. argN]
 
+For example, to color the output of the `ping` command, do:
+
+    acoc ping http://host.com -c 3
+
 `acoc` supports the following command-line options:
 
 | Option              | Description |
@@ -24,25 +28,78 @@ Arguments are passed normally:
 |`-h` or `--help`     | Display usage information.   |
 | `-v` or `--version` | Display version information. |
 
-
 ## Installation
 
-Installing as a RubyGem should solve all dependencies:
+`acoc` depends on the [Term::ANSIColor][term] module. Installing it as a RubyGem
+should solve all dependencies, though:
 
     $ gem install acoc
 
-`acoc` can also make use of
-[Masahiro Tomita's Ruby/TPty](http://www.tmtm.org/ruby/tpty/)
-library to allocate pseudo-terminals in order to fool those
-programs that behave differently if their *stdout* stream is not
-connected to a tty.
-`ls` is one such program.
+`acoc` can also make use of [Masahiro Tomita's Ruby/TPty][tpty] library to
+allocate pseudo-terminals in order to fool those programs that behave
+differently if their *stdout* stream is not connected to a tty.  `ls` is one
+such program.
 
-Whilst Ruby/TPty is not mandatory (`acoc` will ignore its absence),
+Whilst `Ruby/TPty` is not mandatory (`acoc` will ignore its absence),
 it's installation is recommended in order to improve the
 transparency of `acoc`'s operation.
 
 ## Configuration
+
+Out-of-the-box, `acoc` provides coloring for the following commands:
+
+* diff
+* ping
+* traceroute
+* make, configure
+* rpm, rmpbuild
+* w, top, df
+* vmstat
+* nmap, netstat
+* ifconfig, route, tcpdump
+* gcc, ldd, nm
+* strace, ltrace
+* id, ps
+* apt-cache search, apt-cache show
+* apt-get install, apt-get remove
+* lsmod, whereis
+
+You can customize it to color the output of any command you want.
+To do so, follow the steps:
+
+1. Open one of the configuration files (see below);
+2. Add a _section_ to the program you want;
+3. Add a _regular expression_, marking important parts, followed by _their
+   colors_;
+
+For example, the command `mount` outputs the following:
+
+    $ mount
+	proc on /proc type proc (rw,nosuid,nodev,noexec,relatime)
+	sys on /sys type sysfs (rw,nosuid,nodev,noexec,relatime)
+	...
+	/dev/sda2 on /home type ext4 (rw,relatime,data=ordered)
+
+Note that it has a well-defined structure - it's quite like this:
+
+    "A" on "B" type "C" ("D")
+
+So to make _the first block cyan_, _the second block blue_ and the _third block
+red_, add the following to the configuration file:
+
+    # My custom colors for "mount"
+    [mount]
+    /^(.*) on (.*) .*$/  cyan,blue+bold
+    /type (.*)/          red
+
+Note that you can put as many regular expressions as you want
+inside the command section. Last ones have higher precedence.
+
+So, here's the rules:
+
+* **Command**: must be between `[]`s;
+* **Regular Expression*: must be between `//`s;
+* **Colors**: must be in a whole block (cannot have spaces);
 
 ### Files
 
@@ -87,11 +144,15 @@ configuration file.
 
 ## Contributing
 
-`acoc` is only as good as the configuration file that it uses.
-If you compose pattern-matching rules that you think would be
-useful to other people, please
-[send them to me](mailto:ian@caliban.net) for inclusion in a
-subsequent release.
+`acoc` is only as good as the configuration file that it uses. Please share your
+pattern-matching rules, it could be very helpful for everyone!
+
+To share (and see other community-created patterns), go to
+[the acoc wiki][wiki].
+
+If you feel that your command is important, [open an issue on GitHub][issues] or
+[mail me](mailto:eu@alexdantas.net) and it could get included on a subsequent
+release!
 
 ## Bugs
 
@@ -103,13 +164,10 @@ subsequent release.
 
 ## Author
 
-`acoc` was written by Ian Macdonald <ian@caliban.org>
-
-The Ruby Gem was made by Alexandre Dantas <eu@alexdantas.net>
-
-* [acoc home page](http://www.caliban.org/ruby/)
-* [Term::ANSIColor](http://raa.ruby-lang.org/list.rhtml?name=ansicolor)
-* [Ruby/TPty](http://www.tmtm.org/ruby/tpty/)
+* `acoc` was originally written by Ian Macdonald <ian@caliban.org>
+  ([Homepage][ian-home]);
+* It is currently being maintained by Alexandre Dantas <eu@alexdantas.net>
+  ([Homepage][kure-home]);
 
 ## License
 
@@ -128,4 +186,12 @@ GNU General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with this program; if not, write to the Free Software Foundation,
 Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
+
+[ian-home]:  http://www.caliban.org/ruby/
+[kure-home]: http://www.alexdantas.net/
+[term]:      http://raa.ruby-lang.org/list.rhtml?name=ansicolor
+[tpty]:      http://www.tmtm.org/ruby/tpty/
+[github]:    https://github.com/alexdantas/acoc
+[issues]:    https://github.com/alexdantas/acoc/issues
+[wiki]:      https://github.com/alexdantas/acoc/wiki
 
