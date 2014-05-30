@@ -85,7 +85,10 @@ begin
   # if there's no config section for this command and no 'default'
   # section, simply execute it normally.
   # Do same if $ACOC set to 'none'.
-  ACOC.run(ARGV) if ENV['ACOC'] == 'none' || ! (prog || ACOC::cmd.include?('default'))
+  if ENV['ACOC'] == 'none' || ! (prog || ACOC::cmd.include?('default'))
+    ACOC.execute_program(ARGV)
+  end
+  puts 'lel'
 
   # use default section if no program-specific section available
   prog ||= 'default'
@@ -94,10 +97,11 @@ begin
   # accompany it, simply execute it normally.
   # Likewise if STDOUT is not a tty and the 't' flag is
   # not specified.
-  ACOC.run(ARGV) if ACOC::cmd[prog].specs.empty? ||
-    ! ($stdout.tty? || ACOC::cmd[prog].flags.include?('t'))
+  if ACOC::cmd[prog].specs.empty? || ! ($stdout.tty? || ACOC::cmd[prog].flags.include?('t'))
+    ACOC.execute_program(ARGV)
+  end
 
   # colour program output
-  ACOC.colour(prog, *ARGV)
+  ACOC.paint_output(prog, *ARGV)
 end
 

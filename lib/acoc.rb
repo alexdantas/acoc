@@ -90,17 +90,32 @@ rescue LoadError
       end
     end
 
-    def run(args)
-      exec(*args)
+    # Runs a program.
+    #
+    # @param args The full command (with arguments) to be executed on the terminal.
+    #
+    # @warning It WILL replace ACOC; in other words, ACOC's execution
+    #          will be interrupted and the command will run and
+    #          finish as if it ran itself on the first place.
+    #
+    # @note If you want to run this command along with ACOC, you should
+    #       `fork()` or something.
+    #
+    def execute_program(args)
+
+      Kernel.exec(*args)
+
     rescue Errno::ENOENT => reason
-      # can't find the program we're supposed to run
-      $stderr.puts reason
+
+      # Can't find the program we're supposed to run
+      $stderr.puts "acoc: #{args[0]}: command not found"
+
       exit Errno::ENOENT::Errno
     end
 
     # process program output, one line at a time
     #
-    def colour(prog, *cmd_line)
+    def paint_output(prog, *cmd_line)
       block = proc do |f|
         while ! f.eof?
           begin
@@ -145,7 +160,7 @@ rescue LoadError
             STDOUT.reopen(s)
             #STDERR.reopen(s)
             s.close
-            run(cmd_line)
+            execute_program(cmd_line)
           end
         end
 
