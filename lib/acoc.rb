@@ -60,7 +60,7 @@ module ACOC
     end
   end
 
-  # display usage message and exit
+  # Displays usage message and exit
   #
   def usage(code = 0)
     $stderr.puts <<EOF
@@ -71,7 +71,7 @@ EOF
     exit code
   end
 
-  # display version and copyright message, then exit
+  # Displays version and copyright message, then exit.
   #
   def version
     $stderr.puts <<EOF
@@ -86,11 +86,14 @@ EOF
     exit
   end
 
-  # get configuration data
+  # Parses data inside configuration files.
+  #
+  # @param  files An array of filenames to parse.
+  # @return The amount of files parsed
   #
   def parse_config(*files)
-    @@cmd   = Config.new
-    parsed = 0
+    @@cmd = Config.new
+    parsed_count = 0
 
     files.each do |file|
       $stderr.printf("Attempting to read config file: %s\n", file) if $DEBUG
@@ -153,12 +156,12 @@ EOF
           exit 2
         end
 
-        parsed += 1
+        parsed_count += 1
       end
 
       $stderr.printf("Action data: %s\n", @@cmd.inspect) if $DEBUG
 
-      parsed
+      parsed_count
     end
 
     def trap_signal(signals)

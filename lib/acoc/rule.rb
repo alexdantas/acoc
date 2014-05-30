@@ -1,4 +1,7 @@
+
 module ACOC
+
+  # Single color rule for a program.
   class Rule
     attr_reader :regex, :flags, :colours
 

@@ -104,8 +104,10 @@ So, here's the rules:
 ### Files
 
 By reading the regular expressions on the configuration file,
-`acoc` decides how to color the output. Here's the order of
-reading:
+`acoc` decides how to color the output.
+
+Here's the order of reading (with the last one taking precedence over the
+first):
 
 1. `/usr/local/etc/acoc.conf`
 2. `/etc/acoc.conf`
