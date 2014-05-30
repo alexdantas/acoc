@@ -1,6 +1,8 @@
 
 require 'English'
 require 'fileutils'
+require 'logger'
+
 require 'acoc/version'
 require 'acoc/program'
 require 'acoc/config'
@@ -23,6 +25,30 @@ rescue LoadError
     def cmd
       @@cmd = Config.new unless defined? @@cmd
       @@cmd
+    end
+
+    # External interface to log things.
+    #
+    # @note The _actual_ way to use it is passing a message block
+    #       (like this):
+    #           ACOC.logger.debug do "message" end
+    #       That's because the string concatenations are only
+    #       processed if the debug mode is active.
+    #
+    def logger
+      if not defined? @@logger
+        @@logger = Logger.new(STDERR)
+
+        # Default level is WARN and above.
+        # DEBUG < INFO < WARN < ERROR < FATAL < UNKNOWN
+        @@logger.level = Logger::WARN
+        @@logger.level = Logger::DEBUG if $DEBUG
+
+        @@logger.formatter = Kernel.proc do |severity, datetime, progname, msg|
+          "#{datetime} #{severity}: #{msg}\n"
+        end
+      end
+      @@logger
     end
 
     # Set things up, making sure to parse the configuration

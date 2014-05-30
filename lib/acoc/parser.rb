@@ -16,7 +16,8 @@ module ACOC
       parsed_count = 0
 
       files.each do |file|
-        $stderr.printf("Attempting to read config file: %s\n", file) if $DEBUG
+        ACOC.logger.debug do "Attempting to read config file: '#{file}'" end
+
         next unless file && FileTest::file?(file) && FileTest::readable?(file)
 
         begin
@@ -27,20 +28,19 @@ module ACOC
           end
 
         rescue Errno::ENOENT
-          $stderr.puts "Failed to open config file: #{$ERROR_INFO}"
+          $stderr.puts "acoc: Failed to open config file '#{$ERROR_INFO}'"
           exit 1
 
         rescue
-          $stderr.puts "Error while parsing config file #{file} @ line #{$NR}: #{$ERROR_INFO}"
+          $stderr.puts "acoc: Error on config file '#{file}' at line #{$NR}: #{$ERROR_INFO}"
           exit 2
         end
-
         parsed_count += 1
 
-        $stderr.printf("Action data: %s\n", ACOC.cmd.inspect) if $DEBUG
-
-        parsed_count
+        ACOC.logger.debug do "Action data: #{ACOC.cmd.inspect}" end
       end
+
+      parsed_count
     end
 
     def parse_line(line)
@@ -96,7 +96,7 @@ module ACOC
       begin
         regex, flags, colors = /^(.)([^\1]*)\1(g?)\s+(.*)/.match(line)[2..4]
       rescue
-        $stderr.puts "Ignoring bad config line #{$NR}: #{line}"
+        $stderr.puts "acoc: Ignoring bad config line #{$NR}: '#{line}'"
       end
 
       colors = colors.split(/\s*,\s*/)
@@ -112,6 +112,7 @@ module ACOC
         end
       end
     end
+
   end
 end
 
