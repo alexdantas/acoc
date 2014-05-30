@@ -16,6 +16,7 @@ begin
   require 'tpty'
 rescue LoadError
 
+
 module ACOC
   module_function
 
@@ -48,7 +49,7 @@ module ACOC
     # Since __FILE__ is inside lib/, we'll need to jump
     # above.
     #
-    if not File.exists? File.expand_path '~/.acoc.conf'
+    if not File.exist? File.expand_path '~/.acoc.conf'
       fixed_config = File.expand_path(File.dirname(__FILE__) + '/../acoc.conf')
 
       FileUtils.cp(fixed_config, File.expand_path('~/.acoc.conf'))
@@ -100,7 +101,7 @@ EOF
       next unless file && FileTest::file?(file) && FileTest::readable?(file)
 
       begin
-        f = File.open(file) do |f|
+        File.open(file) do |f|
           while line = f.gets do
             next if line =~ /^(#|$)/     # skip blank lines and comments
 
@@ -140,7 +141,7 @@ EOF
             colours = colours.split(/\s*,\s*/)
             colours.join(' ').split(/[+\s]+/).each do |colour|
               raise "#{@@colour} is not a supported #{@@colour}" \
-              unless attributes.collect { |a| a.to_s }.include? colour
+              unless Term::ANSIColor::attributes.collect { |a| a.to_s }.include? colour
               end
 
               progs.each do |prog|
