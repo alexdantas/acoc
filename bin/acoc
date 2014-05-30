@@ -100,7 +100,6 @@ begin
   if ENV['ACOC'] == 'none' || ! (prog || ACOC::cmd.include?('default'))
     ACOC.execute_program(ARGV)
   end
-  puts 'lel'
 
   # use default section if no program-specific section available
   prog ||= 'default'

@@ -113,52 +113,76 @@ rescue LoadError
       exit Errno::ENOENT::Errno
     end
 
-    # process program output, one line at a time
+    # Process program output, one line at a time.
     #
-    def paint_output(prog, *cmd_line)
-      block = proc do |f|
-        while ! f.eof?
+    # @param section    acoc section on the config file, specifying colors
+    # @param cmd_line   The full command to be executed, with arguments.
+    #
+    def paint_output(section, *cmd_line)
+
+      # We're creating a Proc - meaning we are saving
+      # the following block to be executed only when
+      # we want it to.
+      #
+      # When called, this block will run the program
+      # and paint it's output.
+      #
+      # That `io` is the input-output of the program
+      # being executed.
+      #
+      block = Kernel.proc do |io|
+        while not io.eof?
+
           begin
-            line = f.gets
+            line = io.gets
+
           rescue  # why do we need rescue here?
             exit  # why the Errno::EIO when running ls(1)?
           end
 
-          coloured_line = Painter.colour_line(prog, line)
+          coloured_line = Painter.colour_line(section, line)
 
           begin
             print coloured_line
+
           rescue Errno::EPIPE => reason   # catch broken pipes
             $stderr.puts reason
             exit Errno::EPIPE::Errno
           end
-
         end
       end
 
-      # take care of any embedded single quotes in args expanded from globs
+      # Take care of any embedded single quotes
+      # in args expanded from globs.
       cmd_line.map! { |arg| arg.gsub(/'/, %q('"'"')) }
 
-      # prepare command line: requote each argument for the shell
+      # Prepare command line:
+      # requote each argument for the shell
       cmd_line = "'" << cmd_line.join(%q(' ')) << "'"
 
-      # redirect stderr to stdout if /e flag given
-      cmd_line << " 2>&1" if @@cmd[prog].flags.include? 'e'
+      # If flag was given on the configuration file
+      # will redirect `stderr` to `stdout`
+      cmd_line << " 2>&1" if @@cmd[section].flags.include? 'e'
 
-      # make sure we don't buffer output when stdout is connected to a pipe
+      # Make sure we don't buffer
+      # output when stdout is connected to a pipe
       $stdout.sync = true
 
-      # install signal handler
+      # Install signal handler
       trap_signal(%w(HUP INT QUIT CLD))
 
-      if @@cmd[prog].flags.include?('p') && $LOADED_FEATURES.include?('tpty.so')
-        # allocate program a pseudo-terminal and run through that
+      # If we have loaded `tpty` and specifically set a flag
+      # on the configuration file, let's allocate to the program
+      # a pseudo-terminal and run through that.
+      if @@cmd[section].flags.include?('p') && $LOADED_FEATURES.include?('tpty.so')
+
         pty = TPty.new do |s,|
           fork do
             # redirect child streams to slave
             STDIN.reopen(s)
             STDOUT.reopen(s)
             #STDERR.reopen(s)
+
             s.close
             execute_program(cmd_line)
           end
@@ -167,9 +191,14 @@ rescue LoadError
         # no buffering on pty
         # pty.master.sync = true
         block.call(pty.master)
+
       else
-        # execute command
-        IO.popen(cmd_line) { |f| block.call(f) }
+        # Normal acoc execution flow
+        #
+        # This will run the `Proc` defined at the
+        # beginning of this function, running
+        # the program and painting it's output.
+        IO.popen(cmd_line) { |io| block.call(io) }
       end
     end
 
