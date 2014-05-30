@@ -28,37 +28,37 @@
 require 'acoc'
 
 
+# Prints a human-readable help text
+# (and how to use acoc).
+#
 def show_usage
   $stderr.puts <<EOF
-Usage: acoc command [arg1 .. argN]
-       acoc [-h|--help|-v|--version]
+acoc #{ACOC::VERSION}
+Usage:
+        acoc <command> [args]
+        acoc [-h | --help | -v | --version]
+
+acoc: Arbitrary Command Output Colourer
+
+Copyright 2003-2005 Ian Macdonald <ian@caliban.org>
+Copyright 2013-2014 Alexandre Dantas <eu@alexdantas.net>
+
+acoc is free software; see the source for copying conditions.
+There is NO warranty; not even for MERCHANTABILITY or FITNESS
+FOR A PARTICULAR PURPOSE, to the extent permitted by law.
+
+Homepage: http://alexdantas.net/projects/acoc/
 EOF
 end
 
+# Script-friendly version checker:
+# useful to check compatibility and stuff.
+#
 def show_version
-  $stderr.puts <<EOF
-acoc #{ACOC::VERSION}
-
-Copyright 2003-2005 Ian Macdonald <ian@caliban.org>
-This is free software; see the source for copying conditions.
-There is NO warranty; not even for MERCHANTABILITY or FITNESS
-FOR A PARTICULAR PURPOSE, to the extent permitted by law.
-EOF
+  puts "#{ACOC::VERSION}"
 end
 
 begin
-  ACOC.initialise
-
-  if File.lstat($0).symlink?  # we're being invoked via a symlink
-    # Remove symlink's directory from PATH,
-    # multiple times if necessary
-    # Otherwise, acoc will reinvoke itself.
-    ENV['PATH'] = ENV['PATH'].gsub(/#{File.dirname($0)}:?/, '')
-
-    # prefix command line with symlink's name
-    ARGV.unshift 'acoc' # ARGV can now be either exec'ed or popen'ed
-  end
-
   # Showing usage and quitting
   if ARGV.empty? || %w[-h --help].include?(ARGV[0])
     show_usage
@@ -69,6 +69,18 @@ begin
   if %w[-v --version].include?(ARGV[0])
     show_version
     exit 0
+  end
+
+  ACOC.initialise
+
+  if File.lstat($0).symlink?  # we're being invoked via a symlink
+    # Remove symlink's directory from PATH,
+    # multiple times if necessary
+    # Otherwise, acoc will reinvoke itself.
+    ENV['PATH'] = ENV['PATH'].gsub(/#{File.dirname($0)}:?/, '')
+
+    # prefix command line with symlink's name
+    ARGV.unshift 'acoc' # ARGV can now be either exec'ed or popen'ed
   end
 
   # sort the keys to ensure we find the longest (i.e. most specific)
