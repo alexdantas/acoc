@@ -27,6 +27,25 @@
 
 require 'acoc'
 
+
+def show_usage
+  $stderr.puts <<EOF
+Usage: acoc command [arg1 .. argN]
+       acoc [-h|--help|-v|--version]
+EOF
+end
+
+def show_version
+  $stderr.puts <<EOF
+acoc #{ACOC::VERSION}
+
+Copyright 2003-2005 Ian Macdonald <ian@caliban.org>
+This is free software; see the source for copying conditions.
+There is NO warranty; not even for MERCHANTABILITY or FITNESS
+FOR A PARTICULAR PURPOSE, to the extent permitted by law.
+EOF
+end
+
 begin
   ACOC.initialise
 
@@ -40,8 +59,17 @@ begin
     ARGV.unshift 'acoc' # ARGV can now be either exec'ed or popen'ed
   end
 
-  ACOC.usage   if ARGV.empty? || %w[-h --help].include?(ARGV[0])
-  ACOC.version if %w[-v --version].include?(ARGV[0])
+  # Showing usage and quitting
+  if ARGV.empty? || %w[-h --help].include?(ARGV[0])
+    show_usage
+    exit 0
+  end
+
+  # Showing version and quitting
+  if %w[-v --version].include?(ARGV[0])
+    show_version
+    exit 0
+  end
 
   # sort the keys to ensure we find the longest (i.e. most specific)
   # match for the command line, e.g. a config section for [ps ax]
