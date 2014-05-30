@@ -3,12 +3,12 @@ module ACOC
 
   # Single color rule for a program.
   class Rule
-    attr_reader :regex, :flags, :colours
+    attr_reader :regex, :flags, :colors
 
-    def initialize(regex, flags, colours)
+    def initialize(regex, flags, colors)
       @regex   = regex
       @flags   = flags
-      @colours = colours
+      @colors = colors
     end
   end
 end

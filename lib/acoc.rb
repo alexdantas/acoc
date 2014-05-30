@@ -25,16 +25,10 @@ rescue LoadError
       @@cmd
     end
 
-    # set things up
+    # Set things up, making sure to parse the configuration
+    # files.
     #
     def initialise
-
-      # Queen's or Dubya's English?
-      if ENV['LANG'] == "en_US" || ENV['LC_ALL'] == "en_US"
-        @@colour = "color"
-      else
-        @@colour = "colour"
-      end
 
       # The default configuration files, in order of reading
       # Note that the last file will override the preferences
@@ -68,7 +62,7 @@ rescue LoadError
     def trap_signal(signals)
       signals.each do |signal|
         trap(signal) do
-          # make sure terminal is never left in a coloured state
+          # make sure terminal is never left in a colored state
           begin
             print reset
           rescue Errno::EPIPE  # Errno::EPIPE can occur when we're being piped
@@ -140,10 +134,10 @@ rescue LoadError
             exit  # why the Errno::EIO when running ls(1)?
           end
 
-          coloured_line = Painter.colour_line(section, line)
+          colored_line = Painter.color_line(section, line)
 
           begin
-            print coloured_line
+            print colored_line
 
           rescue Errno::EPIPE => reason   # catch broken pipes
             $stderr.puts reason

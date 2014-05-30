@@ -94,22 +94,24 @@ module ACOC
       #     /regexp/    color1,color2,...
       #
       begin
-        regex, flags, colours = /^(.)([^\1]*)\1(g?)\s+(.*)/.match(line)[2..4]
+        regex, flags, colors = /^(.)([^\1]*)\1(g?)\s+(.*)/.match(line)[2..4]
       rescue
         $stderr.puts "Ignoring bad config line #{$NR}: #{line}"
       end
 
-      colours = colours.split(/\s*,\s*/)
-      colours.join(' ').split(/[+\s]+/).each do |colour|
-        raise "#{@@colour} is not a supported #{@@colour}" \
-        unless Term::ANSIColor::attributes.collect { |a| a.to_s }.include? colour
+      colors = colors.split(/\s*,\s*/)
+      colors.join(' ').split(/[+\s]+/).each do |color|
+
+        # Let's quit if the user provided an invalid color
+        if not Painter.valid_color? color
+          raise "'#{color}' is not a supported color"
         end
 
         @@progs.each do |prog|
-          ACOC.cmd[prog].specs << Rule.new(Regexp.new(regex), flags, colours)
+          ACOC.cmd[prog].specs << Rule.new(Regexp.new(regex), flags, colors)
         end
       end
     end
   end
-
+end
 
