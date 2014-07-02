@@ -59,7 +59,7 @@ module ACOC
         #
         #     [invocation1/flags1,invocation2/flags2,...]
         #
-        @@progs = section[0].split(/\s*,\s*/)
+        @@progs = section[1].split(/\s*,\s*/)
 
         @@progs.each do |prog|
 
