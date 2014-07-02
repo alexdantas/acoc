@@ -23,8 +23,7 @@ rescue LoadError
 
     # All options from the configuration file, in a Hash
     def cmd
-      @@cmd = Config.new unless defined? @@cmd
-      @@cmd
+      @@cmd ||= Config.new
     end
 
     # External interface to log things.
