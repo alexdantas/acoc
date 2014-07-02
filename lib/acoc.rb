@@ -63,20 +63,6 @@ rescue LoadError
       config_files << ENV['HOME'] + "/.acoc.conf"
       config_files << ENV['ACOCRC'] if ENV['ACOCRC']
 
-      # If there's no config file on user's home directory,
-      # we'll place our default one there.
-      #
-      # The default one lies on the same directory as the
-      # rest of the source code.
-      # Since __FILE__ is inside lib/, we'll need to jump
-      # above.
-      #
-      if not File.exist? File.expand_path '~/.acoc.conf'
-        fixed_config = File.expand_path(File.dirname(__FILE__) + '/../acoc.conf')
-
-        FileUtils.cp(fixed_config, File.expand_path('~/.acoc.conf'))
-      end
-
       # No configuration files parsed?
       # It returns the number of files read.
       if (Parser.parse_config(*config_files) == 0)
