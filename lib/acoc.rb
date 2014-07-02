@@ -10,14 +10,6 @@ require 'acoc/rule'
 require 'acoc/parser'
 require 'acoc/painter'
 
-# Optionally requiring Ruby/TPty
-# TODO: How to do it cleanly on `gemspec`,
-#       since it's not a gem.
-begin
-  require 'tpty'
-rescue LoadError
-
-
   module ACOC
     module_function
 
@@ -191,37 +183,12 @@ rescue LoadError
       # Install signal handler
       trap_signal(%w(HUP INT QUIT CLD))
 
-      # If we have loaded `tpty` and specifically set a flag
-      # on the configuration file, let's allocate to the program
-      # a pseudo-terminal and run through that.
-      if @@cmd[section].flags.include?('p') && $LOADED_FEATURES.include?('tpty.so')
+      # This will run the `Proc` defined at the
+      # beginning of this function, running
+      # the program and painting it's output.
+      IO.popen(cmd_line) { |io| block.call(io) }
 
-        pty = TPty.new do |s,|
-          fork do
-            # redirect child streams to slave
-            STDIN.reopen(s)
-            STDOUT.reopen(s)
-            #STDERR.reopen(s)
-
-            s.close
-            execute_program(cmd_line)
-          end
-        end
-
-        # no buffering on pty
-        # pty.master.sync = true
-        block.call(pty.master)
-
-      else
-        # Normal acoc execution flow
-        #
-        # This will run the `Proc` defined at the
-        # beginning of this function, running
-        # the program and painting it's output.
-        IO.popen(cmd_line) { |io| block.call(io) }
-      end
     end
 
   end
-end
 
