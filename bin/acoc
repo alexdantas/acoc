@@ -113,6 +113,9 @@ begin
   end
 
   # colour program output
-  ACOC.paint_output(prog, *ARGV)
+  status = ACOC.paint_output(prog, *ARGV)
+
+  exit status
+
 end
 

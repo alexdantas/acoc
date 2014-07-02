@@ -78,28 +78,7 @@ require 'acoc/painter'
     end
 
     def trap_signal(signals)
-      signals.each do |signal|
-        trap(signal) do
-          # make sure terminal is never left in a colored state
-          begin
-            print reset
-          rescue Errno::EPIPE  # Errno::EPIPE can occur when we're being piped
-          end
-
-          # reap the child and collect its exit status
-          # WNOHANG is needed to prevent hang when pty is used
-          begin
-            pid, status = Process.waitpid2(-1, Process::WNOHANG)
-
-          rescue Errno::ECHILD  # Errno::ECHILD can occur in waitpid2
-
-          ensure
-            # exit must be wrapped in at_exit to make sure all output buffers
-            # are flushed. Shift 8 bits to convert exit/signal to just exit status
-            at_exit { exit status.nil? ? 0 : status >> 8 }
-          end
-        end
-      end
+      signals.each { |signal| trap(signal) {} }
     end
 
     # Runs a program.
@@ -143,14 +122,10 @@ require 'acoc/painter'
       # being executed.
       #
       block = Kernel.proc do |io|
-        while not io.eof?
+        while true
 
-          begin
-            line = io.gets
-
-          rescue  # why do we need rescue here?
-            exit  # why the Errno::EIO when running ls(1)?
-          end
+          line = io.gets
+          break unless line
 
           colored_line = Painter.color_line(section, line)
 
@@ -164,29 +139,44 @@ require 'acoc/painter'
         end
       end
 
-      # Take care of any embedded single quotes
-      # in args expanded from globs.
-      cmd_line.map! { |arg| arg.gsub(/'/, %q('"'"')) }
-
-      # Prepare command line:
-      # requote each argument for the shell
-      cmd_line = "'" << cmd_line.join(%q(' ')) << "'"
-
-      # If flag was given on the configuration file
-      # will redirect `stderr` to `stdout`
-      cmd_line << " 2>&1" if @@cmd[section].flags.include? 'e'
-
       # Make sure we don't buffer
       # output when stdout is connected to a pipe
-      $stdout.sync = true
+      STDOUT.sync = true
 
       # Install signal handler
-      trap_signal(%w(HUP INT QUIT CLD))
+      trap_signal(%w(HUP INT QUIT))
+
+      pipe = IO.pipe()
+
+      child = fork do
+        STDOUT.reopen(pipe[1])
+        STDERR.reopen(pipe[1]) if @@cmd[section].flags.include? 'e'
+        pipe[0].close()
+        pipe[1].close()
+        execute_program(cmd_line)
+      end
+
+      pipe[1].close()
 
       # This will run the `Proc` defined at the
       # beginning of this function, running
       # the program and painting it's output.
-      IO.popen(cmd_line) { |io| block.call(io) }
+      block.call(pipe[0])
+
+      # reap the child and collect its exit status
+      # WNOHANG is needed to prevent hang when pty is used
+      begin
+        Process.waitpid(child)
+      rescue Errno::ECHILD # Errno::ECHILD can occur in waitpid
+      end
+
+      # make sure terminal is never left in a coloured state
+      begin
+        print reset
+      rescue Errno::EPIPE # Errno::EPIPE can occur when we're being piped
+      end
+
+      return $?.signaled? ? (128 + $?.termsig) : ($? >> 8)
 
     end
 
