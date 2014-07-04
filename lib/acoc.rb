@@ -190,6 +190,13 @@ end
       end
 
       child = fork do
+        if @@cmd[section].flags.include? 'p'
+          lines, cols = `stty size 2>/dev/null`.split()
+          if 0 == $?
+            ENV['LINES'] = lines
+            ENV['COLUMNS'] = cols
+          end
+        end
         STDOUT.reopen(pipe[1])
         STDERR.reopen(pipe[1]) if @@cmd[section].flags.include? 'e'
         pipe[0].close()
