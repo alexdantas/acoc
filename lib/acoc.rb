@@ -11,6 +11,14 @@ require 'acoc/rule'
 require 'acoc/parser'
 require 'acoc/painter'
 
+begin
+  require 'tpty'
+  $has_tpty = true
+rescue LoadError
+  require 'pty'
+  $has_tpty = false
+end
+
   module ACOC
     module_function
 
@@ -20,6 +28,22 @@ require 'acoc/painter'
       # - ruby 1.8 does not have it
       # - it will not work with an unknown signal number (e.g. 42)
       Signal.list.invert[signo] || '???'
+    end
+
+    # Get pseudo terminal.
+    def getpty
+      if $has_tpty
+        pty = TPty.new()
+        [pty.master, pty.slave]
+      else
+        # Ruby >=1.9 has PTY.open.
+        unless PTY.respond_to?(:open)
+          $stderr.puts "acoc: warning: no pseudo terminal support available (for Ruby 1.8, install tpty)"
+          IO.pipe()
+        else
+          PTY.open()
+        end
+      end
     end
 
     # All options from the configuration file, in a Hash
@@ -133,7 +157,11 @@ require 'acoc/painter'
       block = Kernel.proc do |io|
         while true
 
-          line = io.gets
+          line = begin
+                   io.gets
+                 rescue Errno::EIO # GNU/Linux raises EIO on EOF when using PTY.
+                   nil
+                 end
           break unless line
 
           colored_line = Painter.color_line(section, line)
@@ -155,7 +183,11 @@ require 'acoc/painter'
       # Install signal handler
       trap_signal(%w(HUP INT QUIT))
 
-      pipe = IO.pipe()
+      if @@cmd[section].flags.include?('p')
+        pipe = getpty()
+      else
+        pipe = IO.pipe()
+      end
 
       child = fork do
         STDOUT.reopen(pipe[1])
