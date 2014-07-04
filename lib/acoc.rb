@@ -59,7 +59,9 @@ rescue LoadError
       # The default configuration files, in order of reading
       # Note that the last file will override the preferences
       # of the first.
-      config_files = %w(/etc/acoc.conf /usr/local/etc/acoc.conf)
+      config_files = []
+      config_files << File.expand_path(File.dirname(__FILE__) + '/../acoc.conf')
+      config_files += %w(/etc/acoc.conf /usr/local/etc/acoc.conf)
       config_files << ENV['HOME'] + "/.acoc.conf"
       config_files << ENV['ACOCRC'] if ENV['ACOCRC']
 
