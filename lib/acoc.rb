@@ -2,6 +2,7 @@
 require 'English'
 require 'fileutils'
 require 'logger'
+require 'shellwords'
 
 require 'acoc/version'
 require 'acoc/program'
@@ -12,6 +13,14 @@ require 'acoc/painter'
 
   module ACOC
     module_function
+
+    # Signal name from number.
+    def signame(signo)
+      # Do not use signame:
+      # - ruby 1.8 does not have it
+      # - it will not work with an unknown signal number (e.g. 42)
+      Signal.list.invert[signo] || '???'
+    end
 
     # All options from the configuration file, in a Hash
     def cmd
@@ -176,7 +185,30 @@ require 'acoc/painter'
       rescue Errno::EPIPE # Errno::EPIPE can occur when we're being piped
       end
 
-      return $?.signaled? ? (128 + $?.termsig) : ($? >> 8)
+      if $?.signaled?
+        case signame($?.termsig)
+        when 'ABRT'  ; reason = "abort"
+        when 'ALRM'  ; reason = "alarm"
+        when 'BUS'   ; reason = "bus error"
+        when 'FPE'   ; reason = "floating point exception"
+        when 'HUP'   ; reason = "hangup"
+        when 'ILL'   ; reason = "illegal hardware instruction"
+        when 'INT'   ; reason = "interrupt"
+        when 'KILL'  ; reason = "killed"
+        when 'QUIT'  ; reason = "quit"
+        when 'SEGV'  ; reason = "segmentation fault"
+        when 'TERM'  ; reason = "terminated"
+        when 'TRAP'  ; reason = "trace trap"
+        else         ; reason = "signal #{$?.termsig} (#{signame($?.termsig)})"
+        end
+        reason << ' (cored dumped)' if $?.coredump?
+        STDERR.puts "acoc: #{reason}: #{Shellwords.join(cmd_line)}"
+        status = 128 + $?.termsig
+      else
+        status = $? >> 8
+      end
+
+      return status
 
     end
 
