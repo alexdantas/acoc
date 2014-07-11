@@ -2,6 +2,7 @@
 require 'English'
 require 'fileutils'
 require 'logger'
+require 'shellwords'
 
 require 'acoc/version'
 require 'acoc/program'
@@ -10,16 +11,40 @@ require 'acoc/rule'
 require 'acoc/parser'
 require 'acoc/painter'
 
-# Optionally requiring Ruby/TPty
-# TODO: How to do it cleanly on `gemspec`,
-#       since it's not a gem.
 begin
   require 'tpty'
+  $has_tpty = true
 rescue LoadError
-
+  require 'pty'
+  $has_tpty = false
+end
 
   module ACOC
     module_function
+
+    # Signal name from number.
+    def signame(signo)
+      # Do not use signame:
+      # - ruby 1.8 does not have it
+      # - it will not work with an unknown signal number (e.g. 42)
+      Signal.list.invert[signo] || '???'
+    end
+
+    # Get pseudo terminal.
+    def getpty
+      if $has_tpty
+        pty = TPty.new()
+        [pty.master, pty.slave]
+      else
+        # Ruby >=1.9 has PTY.open.
+        unless PTY.respond_to?(:open)
+          $stderr.puts "acoc: warning: no pseudo terminal support available (for Ruby 1.8, install tpty)"
+          IO.pipe()
+        else
+          PTY.open()
+        end
+      end
+    end
 
     # All options from the configuration file, in a Hash
     def cmd
@@ -73,28 +98,7 @@ rescue LoadError
     end
 
     def trap_signal(signals)
-      signals.each do |signal|
-        trap(signal) do
-          # make sure terminal is never left in a colored state
-          begin
-            print reset
-          rescue Errno::EPIPE  # Errno::EPIPE can occur when we're being piped
-          end
-
-          # reap the child and collect its exit status
-          # WNOHANG is needed to prevent hang when pty is used
-          begin
-            pid, status = Process.waitpid2(-1, Process::WNOHANG)
-
-          rescue Errno::ECHILD  # Errno::ECHILD can occur in waitpid2
-
-          ensure
-            # exit must be wrapped in at_exit to make sure all output buffers
-            # are flushed. Shift 8 bits to convert exit/signal to just exit status
-            at_exit { exit status.nil? ? 0 : status >> 8 }
-          end
-        end
-      end
+      signals.each { |signal| trap(signal) {} }
     end
 
     # Runs a program.
@@ -138,14 +142,14 @@ rescue LoadError
       # being executed.
       #
       block = Kernel.proc do |io|
-        while not io.eof?
+        while true
 
-          begin
-            line = io.gets
-
-          rescue  # why do we need rescue here?
-            exit  # why the Errno::EIO when running ls(1)?
-          end
+          line = begin
+                   io.gets
+                 rescue Errno::EIO # GNU/Linux raises EIO on EOF when using PTY.
+                   nil
+                 end
+          break unless line
 
           colored_line = Painter.color_line(section, line)
 
@@ -159,56 +163,80 @@ rescue LoadError
         end
       end
 
-      # Take care of any embedded single quotes
-      # in args expanded from globs.
-      cmd_line.map! { |arg| arg.gsub(/'/, %q('"'"')) }
-
-      # Prepare command line:
-      # requote each argument for the shell
-      cmd_line = "'" << cmd_line.join(%q(' ')) << "'"
-
-      # If flag was given on the configuration file
-      # will redirect `stderr` to `stdout`
-      cmd_line << " 2>&1" if @@cmd[section].flags.include? 'e'
-
       # Make sure we don't buffer
       # output when stdout is connected to a pipe
-      $stdout.sync = true
+      STDOUT.sync = true
 
       # Install signal handler
-      trap_signal(%w(HUP INT QUIT CLD))
+      trap_signal(%w(HUP INT QUIT))
 
-      # If we have loaded `tpty` and specifically set a flag
-      # on the configuration file, let's allocate to the program
-      # a pseudo-terminal and run through that.
-      if @@cmd[section].flags.include?('p') && $LOADED_FEATURES.include?('tpty.so')
+      if @@cmd[section].flags.include?('p')
+        pipe = getpty()
+      else
+        pipe = IO.pipe()
+      end
 
-        pty = TPty.new do |s,|
-          fork do
-            # redirect child streams to slave
-            STDIN.reopen(s)
-            STDOUT.reopen(s)
-            #STDERR.reopen(s)
-
-            s.close
-            execute_program(cmd_line)
+      child = fork do
+        if @@cmd[section].flags.include? 'p'
+          lines, cols = `stty size 2>/dev/null`.split()
+          if 0 == $?
+            ENV['LINES'] = lines
+            ENV['COLUMNS'] = cols
           end
         end
-
-        # no buffering on pty
-        # pty.master.sync = true
-        block.call(pty.master)
-
-      else
-        # Normal acoc execution flow
-        #
-        # This will run the `Proc` defined at the
-        # beginning of this function, running
-        # the program and painting it's output.
-        IO.popen(cmd_line) { |io| block.call(io) }
+        STDOUT.reopen(pipe[1])
+        STDERR.reopen(pipe[1]) if @@cmd[section].flags.include? 'e'
+        pipe[0].close()
+        pipe[1].close()
+        execute_program(cmd_line)
       end
+
+      pipe[1].close()
+
+      # This will run the `Proc` defined at the
+      # beginning of this function, running
+      # the program and painting it's output.
+      block.call(pipe[0])
+
+      # reap the child and collect its exit status
+      # WNOHANG is needed to prevent hang when pty is used
+      begin
+        Process.waitpid(child)
+      rescue Errno::ECHILD # Errno::ECHILD can occur in waitpid
+      end
+
+      # make sure terminal is never left in a coloured state
+      begin
+        print reset
+      rescue Errno::EPIPE # Errno::EPIPE can occur when we're being piped
+      end
+
+      if $?.signaled?
+        case signame($?.termsig)
+        when 'ABRT'  ; reason = "abort"
+        when 'ALRM'  ; reason = "alarm"
+        when 'BUS'   ; reason = "bus error"
+        when 'FPE'   ; reason = "floating point exception"
+        when 'HUP'   ; reason = "hangup"
+        when 'ILL'   ; reason = "illegal hardware instruction"
+        when 'INT'   ; reason = "interrupt"
+        when 'KILL'  ; reason = "killed"
+        when 'QUIT'  ; reason = "quit"
+        when 'SEGV'  ; reason = "segmentation fault"
+        when 'TERM'  ; reason = "terminated"
+        when 'TRAP'  ; reason = "trace trap"
+        else         ; reason = "signal #{$?.termsig} (#{signame($?.termsig)})"
+        end
+        reason << ' (cored dumped)' if $?.coredump?
+        STDERR.puts "acoc: #{reason}: #{Shellwords.join(cmd_line)}"
+        status = 128 + $?.termsig
+      else
+        status = $? >> 8
+      end
+
+      return status
+
     end
 
   end
-end
 
