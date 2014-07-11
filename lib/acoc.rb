@@ -58,23 +58,11 @@ rescue LoadError
       # The default configuration files, in order of reading
       # Note that the last file will override the preferences
       # of the first.
-      config_files = %w(/etc/acoc.conf /usr/local/etc/acoc.conf)
+      config_files = []
+      config_files << File.expand_path(File.dirname(__FILE__) + '/../acoc.conf')
+      config_files += %w(/etc/acoc.conf /usr/local/etc/acoc.conf)
       config_files << ENV['HOME'] + "/.acoc.conf"
       config_files << ENV['ACOCRC'] if ENV['ACOCRC']
-
-      # If there's no config file on user's home directory,
-      # we'll place our default one there.
-      #
-      # The default one lies on the same directory as the
-      # rest of the source code.
-      # Since __FILE__ is inside lib/, we'll need to jump
-      # above.
-      #
-      if not File.exist? File.expand_path '~/.acoc.conf'
-        fixed_config = File.expand_path(File.dirname(__FILE__) + '/../acoc.conf')
-
-        FileUtils.cp(fixed_config, File.expand_path('~/.acoc.conf'))
-      end
 
       # No configuration files parsed?
       # It returns the number of files read.
